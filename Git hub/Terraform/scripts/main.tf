@@ -83,25 +83,25 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-# Elastic IP
-resource "aws_eip" "eip" {
-  #instance = aws_instance.web.id
-  domain = "vpc"
-}
+# # Elastic IP
+# resource "aws_eip" "eip" {
+#   #instance = aws_instance.web.id
+#   domain = "vpc"
+# }
 
-# Nat Gateway
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.eip.id
-  subnet_id     = aws_subnet.Public-Subnet.id
+# # Nat Gateway
+# resource "aws_nat_gateway" "nat" {
+#   allocation_id = aws_eip.eip.id
+#   subnet_id     = aws_subnet.Public-Subnet.id
 
-  tags = {
-    Name = "gw NAT"
-  }
+#   tags = {
+#     Name = "gw NAT"
+#   }
 
-  # To ensure proper ordering, it is recommended to add an explicit dependency
-  # on the Internet Gateway for the VPC.
-  # depends_on = [aws_internet_gateway.example]
-}
+#   # To ensure proper ordering, it is recommended to add an explicit dependency
+#   # on the Internet Gateway for the VPC.
+#   # depends_on = [aws_internet_gateway.example]
+# }
 
 # Route table association
 
@@ -111,10 +111,10 @@ resource "aws_route_table_association" "Public-route-table" {
 }
 
 
-resource "aws_route_table_association" "Private-route-table" {
-  subnet_id      = aws_subnet.Private-Subnet.id
-  route_table_id = aws_route_table.Private-Route-Table.id
-}
+# resource "aws_route_table_association" "Private-route-table" {
+#   subnet_id      = aws_subnet.Private-Subnet.id
+#   route_table_id = aws_route_table.Private-Route-Table.id
+# }
 
 
 resource "aws_route" "r" {
@@ -123,8 +123,8 @@ resource "aws_route" "r" {
   gateway_id             = aws_internet_gateway.gw.id
 }
 
-resource "aws_route" "r1" {
-  route_table_id         = aws_route_table.Private-Route-Table.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id # = aws_nat_gateway.nat.id
-}
+# resource "aws_route" "r1" {
+#   route_table_id         = aws_route_table.Private-Route-Table.id
+#   destination_cidr_block = "0.0.0.0/0"
+#   nat_gateway_id         = aws_nat_gateway.nat.id # = aws_nat_gateway.nat.id
+# }
