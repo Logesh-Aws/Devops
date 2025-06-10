@@ -1,0 +1,15 @@
+- name: update web servers
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+  - name: install softwares
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - telnet
+      - curl
+      - wget
+      - docker.io

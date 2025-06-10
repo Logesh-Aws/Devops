@@ -1,0 +1,50 @@
+- name: Install Jenkins
+  hosts: jenkins
+  remote_user: ubuntu
+  become: yes
+
+  vars:
+    java_package: openjdk-17-jre-headless
+    jenkins_package: jenkins
+    jenkins_key_url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    jenkins_key_path: /usr/share/keyrings/jenkins-keyring.asc
+    jenkins_repo: "deb [signed-by={{ jenkins_key_path }}] https://pkg.jenkins.io/debian-stable binary/"
+    jenkins_service: jenkins
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Java (required for Jenkins)
+      apt: 
+        name: "{{ java_package }}"
+        state: present
+
+    - name: Add Jenkins GPG key
+      get_url:
+        url: "{{ jenkins_key_url }}"
+        dest: "{{ jenkins_key_path }}"
+        mode: '0644'
+
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: "{{ jenkins_repo }}"
+        state: present
+        filename: jenkins
+
+    - name: Update apt cache after adding Jenkins repo
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: "{{ jenkins_package }}"
+        state: present
+
+    - name: Ensure Jenkins service is enabled and started
+      service:
+        name: "{{ jenkins_service }}"
+        state: started
+        enabled: yes

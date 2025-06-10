@@ -1,0 +1,17 @@
+---
+- name: update web servers
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+  - name: install apache2-test
+    apt:
+      name: apache2
+      state: present
+
+  - name: webserver
+    copy:
+       src: ./index.html
+       dest: /var/www/html
+    

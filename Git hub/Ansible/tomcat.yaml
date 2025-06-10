@@ -1,0 +1,37 @@
+- name: Install Tomcat
+  hosts: jenkins
+  become: yes
+
+  tasks:
+    - name: Download Tomcat tar file
+      get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.105/bin/apache-tomcat-9.0.105.tar.gz
+        dest: /opt/apache-tomcat-9.0.105.tar.gz
+        mode: '0644'
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: /opt/apache-tomcat-9.0.105.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+
+    - name: Change Tomcat port from 8080 to 8082
+      lineinfile:
+        path: /opt/apache-tomcat-9.0.105/conf/server.xml
+        regexp: '<Connector port="8080" protocol="HTTP/1.1"'
+        line: '    <Connector port="8085" protocol="HTTP/1.1"'
+        backrefs: yes
+
+    - name: Stop Tomcat if running
+      shell: /opt/apache-tomcat-9.0.105/bin/shutdown.sh
+      ignore_errors: yes
+
+    - name: Start Tomcat
+      shell: /opt/apache-tomcat-9.0.105/bin/startup.sh
+    
+    - name: Deployment
+      copy:
+         src: ./sample.war 
+         dest: /opt/apache-tomcat-9.0.105/webapps
+       
