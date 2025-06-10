@@ -11,13 +11,7 @@ terraform {
   }
 }
 
-# VPC creation region
-
-provider "aws" {
-  # Configuration options
-  region = "ap-south-1"
-}
-
+ 
 # VPC Name
 resource "aws_vpc" "VPC" {
   cidr_block       = var.cidr
