@@ -14,6 +14,6 @@ variable "Pvt-sub" {
 }
 
 variable "Name" {
-    default = "my-var-vpc"
+    default = "Dev-var-vpc"
   
 }
