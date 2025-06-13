@@ -1,17 +1,17 @@
 terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "6.0.0-beta2"
-    }
-    google = {
-      source  = "hashicorp/google"
-      version = "6.37.0"
-    }
-  }
+  #   # required_providers {
+  #   #   aws = {
+  #   #     source  = "hashicorp/aws"
+  #   #     version = "6.0.0-beta2"
+  #   #   }
+  #     # google = {
+  #     #   source  = "hashicorp/google"
+  #     #   version = "6.37.0"
+  #     # }
+  #   }
 }
 
- 
+
 # VPC Name
 resource "aws_vpc" "VPC" {
   cidr_block       = var.cidr
@@ -22,7 +22,7 @@ resource "aws_vpc" "VPC" {
   }
   lifecycle {
     create_before_destroy = true
-    prevent_destroy = false
+    prevent_destroy       = false
   }
 }
 
