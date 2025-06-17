@@ -11,53 +11,44 @@ data "aws_ami" "Linux" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"]
+  owners = ["099720109477"] # Canonical
 }
 
-# First EC2 instance
-resource "aws_instance" "web1" {
+# EC2 Instance
+resource "aws_instance" "web" {
   ami           = data.aws_ami.Linux.id
   instance_type = "t2.micro"
+  key_name      = "Aws-key-pair" # Replace with your key pair name
 
   tags = {
     Name = "Linux-1"
   }
 }
 
-# Second EC2 instance
-resource "aws_instance" "web2" {
-  ami           = data.aws_ami.Linux.id
-  instance_type = "t2.micro"
-
-  tags = {
-    Name = "Linux-2"
-  }
-}
-
-# Second EC2 instance
-resource "aws_instance" "web3" {
-  ami           = data.aws_ami.Linux.id
-  instance_type = "t2.micro"
-
-  tags = {
-    Name = "Linux-3"
-  }
-}
-
-# Single provisioner to write all instance details
-resource "null_resource" "write_all_details" {
-  depends_on = [aws_instance.web1, aws_instance.web2]
+# Write instance details locally
+resource "null_resource" "write_details" {
+  depends_on = [aws_instance.web]
 
   provisioner "local-exec" {
     interpreter = ["PowerShell", "-Command"]
     command = <<EOT
       Start-Sleep -Seconds 10;
       $details = @()
-      $details += "Instance ID: ${aws_instance.web1.id}`nPrivate IP: ${aws_instance.web1.private_ip}`nPublic IP: ${aws_instance.web1.public_ip}`n"
-      $details += "Instance ID: ${aws_instance.web2.id}`nPrivate IP: ${aws_instance.web2.private_ip}`nPublic IP: ${aws_instance.web2.public_ip}`n"
-      $details += "Instance ID: ${aws_instance.web2.id}`nPrivate IP: ${aws_instance.web2.private_ip}`nPublic IP: ${aws_instance.web2.public_ip}`n"
-
+      $details += "Instance ID: ${aws_instance.web.id}`nPrivate IP: ${aws_instance.web.private_ip}`nPublic IP: ${aws_instance.web.public_ip}`n"
       $details -join "`n" | Out-File -FilePath details.txt -Encoding utf8
     EOT
+  }
+
+  # Copy details.txt to EC2 instance
+  provisioner "file" {
+    source      = "./details.txt"
+    destination = "/home/ubuntu/details.txt"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = aws_instance.web.public_ip
+      private_key = file("./Aws-key-pair.pem") # Ensure this file exists and is chmod 400
+    }
   }
 }
