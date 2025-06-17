@@ -11,23 +11,53 @@ data "aws_ami" "Linux" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical's correct owner ID for Ubuntu
+  owners = ["099720109477"]
 }
 
-
-resource "aws_instance" "web" {
+# First EC2 instance
+resource "aws_instance" "web1" {
   ami           = data.aws_ami.Linux.id
   instance_type = "t2.micro"
 
   tags = {
-    Name = "HelloWorld"
+    Name = "Linux-1"
   }
+}
 
-provisioner "local-exec" {
+# Second EC2 instance
+resource "aws_instance" "web2" {
+  ami           = data.aws_ami.Linux.id
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "Linux-2"
+  }
+}
+
+# Second EC2 instance
+resource "aws_instance" "web3" {
+  ami           = data.aws_ami.Linux.id
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "Linux-3"
+  }
+}
+
+# Single provisioner to write all instance details
+resource "null_resource" "write_all_details" {
+  depends_on = [aws_instance.web1, aws_instance.web2]
+
+  provisioner "local-exec" {
+    interpreter = ["PowerShell", "-Command"]
     command = <<EOT
-      echo "Instance ID: ${self.id}" > details.txt
-      echo "Private IP: ${self.private_ip}" >> details.txt
-      echo "Public IP: ${self.public_ip}" >> details.txt
+      Start-Sleep -Seconds 10;
+      $details = @()
+      $details += "Instance ID: ${aws_instance.web1.id}`nPrivate IP: ${aws_instance.web1.private_ip}`nPublic IP: ${aws_instance.web1.public_ip}`n"
+      $details += "Instance ID: ${aws_instance.web2.id}`nPrivate IP: ${aws_instance.web2.private_ip}`nPublic IP: ${aws_instance.web2.public_ip}`n"
+      $details += "Instance ID: ${aws_instance.web2.id}`nPrivate IP: ${aws_instance.web2.private_ip}`nPublic IP: ${aws_instance.web2.public_ip}`n"
+
+      $details -join "`n" | Out-File -FilePath details.txt -Encoding utf8
     EOT
   }
 }
