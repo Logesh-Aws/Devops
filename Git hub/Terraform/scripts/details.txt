@@ -1,4 +1,4 @@
-﻿Instance ID: i-0432ff36b23329986
-Private IP: 172.31.1.1
-Public IP: 43.204.115.192
+﻿Instance ID: i-0c36ec234f53964f8
+Private IP: 172.31.11.216
+Public IP: 13.201.99.41
 
