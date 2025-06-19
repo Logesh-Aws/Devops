@@ -31,7 +31,7 @@ resource "null_resource" "write_details" {
 
   provisioner "local-exec" {
     interpreter = ["PowerShell", "-Command"]
-    command = <<EOT
+    command     = <<EOT
       Start-Sleep -Seconds 10;
       $details = @()
       $details += "Instance ID: ${aws_instance.web.id}`nPrivate IP: ${aws_instance.web.private_ip}`nPublic IP: ${aws_instance.web.public_ip}`n"

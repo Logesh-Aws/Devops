@@ -10,13 +10,13 @@ terraform {
     }
   }
 
-  # Optional: Uncomment and configure this block if using remote S3 backend
-  # backend "s3" {
-  #   bucket  = "bucket.00-test"
-  #   key     = "Terraform/statefile"
-  #   region  = "ap-south-1"
-  #   profile = "Logeshwaran"
-  # }
+  #Optional: Uncomment and configure this block if using remote S3 backend
+  backend "s3" {
+    bucket  = "bucket.00-test"
+    key     = "Terraform/statefile"
+    region  = "ap-south-1"
+    profile = "Logeshwaran"
+  }
 }
 
 provider "aws" {
