@@ -1,0 +1,84 @@
+
+Kubernetes Minikube – Host Static Content with Apache (httpd)
+==============================================================
+
+🎯 Objective:
+Serve your own static website (e.g., CSK fan page) using `httpd` on Minikube by mounting content via a ConfigMap.
+
+✅ Folder Setup
+---------------
+1. Create a local folder for your website:
+    mkdir ~/my-website
+    cd ~/my-website
+
+2. Add content (e.g., index.html, images):
+    Vi index.html
+    Paste the content into the index.html file.	
+    curl -o csk.png https://www.bing.com/th/id/OIP.azy7lE1ncFLirNmXQ8g6yQHaEK?w=285&h=211&c=8&rs=1&qlt=70&r=0&o=7&cb=iavawebp1&dpr=1.3&pid=3.1&rm=3
+
+✅ Create or Update ConfigMap
+-----------------------------
+   This will create or recreate the configmap which is used to host the file.
+
+    kubectl create configmap my-website-html --from-file=. --dry-run=client -o yaml | kubectl apply -f -
+
+✅ Apache Deployment YAML
+--------------------------
+Create a file named `httpd-deployment.yaml` with:
+
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: httpd-deployment
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: httpd
+      template:
+        metadata:
+          labels:
+            app: httpd
+        spec:
+          containers:
+          - name: httpd
+            image: httpd
+            ports:
+            - containerPort: 80
+            volumeMounts:
+            - name: html-volume
+              mountPath: /usr/local/apache2/htdocs/
+          volumes:
+          - name: html-volume
+            configMap:
+              name: my-website-html
+
+✅ Deploy Apache
+----------------
+    kubectl apply -f httpd-deployment.yaml
+    kubectl expose deployment httpd-deployment --type=NodePort --port=80
+
+✅ Restart Pod to Pick Up Changes
+---------------------------------
+    kubectl delete pod -l app=httpd
+
+✅ Access the Webpage
+---------------------
+    minikube service httpd-deployment --url
+
+    Open the URL in a browser, e.g.:
+    http://192.168.49.2:30000/
+
+🛠 Manual Content Copy (Quick Testing Only)
+------------------------------------------
+1. Get Pod name:
+    kubectl get pods
+
+2. Copy file into running pod (not persistent):
+    kubectl cp index.html <pod-name>:/usr/local/apache2/htdocs/index.html
+
+🧼 Clean Up (Optional)
+----------------------
+    kubectl delete deployment httpd-deployment
+    kubectl delete service httpd-deployment
+    kubectl delete configmap my-website-html

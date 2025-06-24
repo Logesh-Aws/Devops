@@ -1,0 +1,25 @@
+# httpd-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      containers:
+      - name: httpd
+        image: httpd
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/local/apache2/htdocs/
+      volumes:
+      - name: html-volume
+        configMap:
+          name: httpd-html
