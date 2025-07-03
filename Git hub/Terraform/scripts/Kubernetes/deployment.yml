@@ -20,7 +20,7 @@ spec:
               - key: app
                 operator: In
                 values:
-                - dev1
+                - dev
       containers:
       - name: httpd
         image: httpd
