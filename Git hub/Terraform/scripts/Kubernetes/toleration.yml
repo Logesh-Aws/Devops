@@ -1,0 +1,20 @@
+
+
+# First when the taint process give correct toleration.
+#  - kubectl taint nodes minikube env=dev:NoSchedule
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-toleration
+spec:
+  containers:
+  - name: httpd
+    image: httpd
+  tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "dev"
+    effect: "NoSchedule"
+                                                                                                                                         value: "dev"                                                                                                                                                effect: "NoExecute"
