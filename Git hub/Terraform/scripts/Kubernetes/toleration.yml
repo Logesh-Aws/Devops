@@ -16,5 +16,5 @@ spec:
   - key: "app"
     operator: "Equal"
     value: "dev"
-    effect: "NoSchedule"
+    effect: "NoExecute"
                                                                                                                                          value: "dev"                                                                                                                                                effect: "NoExecute"

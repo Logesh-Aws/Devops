@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: logesh
+  labels:
+    app: dev  
+spec:
+  containers:
+  - name: nginx
+    image: nginx:stable
+    ports:
+      - containerPort: 80
+        name: http-web-svc
+
+  - name: tomcat
+    image: tomcat:latest
+    ports:
+      - containerPort: 8080
+        name: http-web-svc
