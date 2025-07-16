@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+          name: nginx-port
+      - name: tomcat
+        image: tomcat:11.0.0
+        ports:
+        - containerPort: 8080
+          name: tomcat-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: NodePort
+  selector:
+    app: myapp
+  ports:
+    - name: nginx-service
+      port: 80
+      targetPort: 80
+      nodePort: 30007
+    - name: tomcat-service
+      port: 8080
+      targetPort: 8080
+      nodePort: 30008
+

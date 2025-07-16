@@ -10,10 +10,27 @@ spec:
     image: nginx:stable
     ports:
       - containerPort: 80
-        name: http-web-svc
+        name: nginx-port
 
   - name: tomcat
     image: tomcat:latest
     ports:
       - containerPort: 8080
-        name: http-web-svc
+        name: tomcat-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-service
+spec:
+  selector:
+    app: dev
+  ports:
+  - name: nginx-service
+    protocol: TCP
+    port: 80
+    targetPort: nginx-port
+  - name: tomcat-service
+    protocol: TCP
+    port: 8080
+    targetPort: tomcat-port
